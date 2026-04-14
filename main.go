@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/OpenDataTelemetry/mqtt-topic-rewrite-lns-imt/devices"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
@@ -53,6 +54,7 @@ func main() {
 		"application/15edcb63-f291-4333-ac61-13eb743ad8ef/device/+/event/up": byte(mqttSubQos), // GPS
 		"application/8e20d344-cd01-4503-8ffc-36735af8b2c1/device/+/event/up": byte(mqttSubQos), // VibrationAverage
 		"application/72cf3110-59c3-4d95-9107-015c1573e38a/device/+/event/up": byte(mqttSubQos), // 8PointTemperature
+		"application/8bcb6d0a-9ab8-4699-ab66-8bee202367a7/device/+/event/up": byte(mqttSubQos), // SmartCampusMaua
 	}
 
 	mqttPubBroker := "mqtt://mqtt.maua.br:1883"
@@ -92,6 +94,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	devicesMap := devices.GetDevicesMap()
+	
 	for {
 		incoming := <-c
 		s := strings.Split(incoming[0], "/")
@@ -143,7 +147,10 @@ func main() {
 
 		case "72cf3110-59c3-4d95-9107-015c1573e38a":
 			measurement = "Temperature8Point"
+		case "8bcb6d0a-9ab8-4699-ab66-8bee202367a7":
+		    measurement = string(devicesMap[s[3]])
 		}
+		
 
 		deviceId := s[3]
 
@@ -156,6 +163,5 @@ func main() {
 		// fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 		token := pClient.Publish(sbPubTopic.String(), byte(mqttPubQos), false, incoming[1])
 		token.Wait()
-
 	}
 }
