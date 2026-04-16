@@ -95,7 +95,7 @@ func main() {
 	}
 
 	devicesMap := devices.GetDevicesMap()
-	
+
 	for {
 		incoming := <-c
 		s := strings.Split(incoming[0], "/")
@@ -128,7 +128,7 @@ func main() {
 			measurement = "WaterTankLevel"
 
 		case "a7d603f2-3de4-4516-82f5-3323a3a80467":
-			measurement = "WeatherStation"
+			measurement = "NIT21LI_EMW104"
 
 		case "e2cbf2fb-fb26-4608-aacc-66115c0521c0":
 			measurement = "SoilMoisture3DepthLevels"
@@ -150,7 +150,7 @@ func main() {
 		case "8bcb6d0a-9ab8-4699-ab66-8bee202367a7":
 		    measurement = string(devicesMap[s[3]])
 		}
-		
+
 
 		deviceId := s[3]
 

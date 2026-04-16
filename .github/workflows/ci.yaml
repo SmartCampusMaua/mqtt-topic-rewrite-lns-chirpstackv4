@@ -4,7 +4,7 @@ on:
     branches:
       - develop
 jobs:
-  check-application:  
+  check-application:
     name: build-job
     runs-on: ubuntu-latest
     steps:
@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: smartcampusmaua/mqtt-topic-rewrite-lns-chirpstackv4:0.3.9
+          tags: smartcampusmaua/mqtt-topic-rewrite-lns-chirpstackv4:0.3.10
