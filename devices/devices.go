@@ -4,11 +4,12 @@ package devices
 type DeviceModel string
 
 const (
-	EM500SWL DeviceModel = "EM500SWL"
-	KS3000LORA DeviceModel = "KS3000LORA"
-	WS101R DeviceModel = "WS101R"
-	DTL200SWL DeviceModel = "DTL200SWL"
-	EM300DI DeviceModel = "EM300DI"
+	EM500_SWL DeviceModel = "EM500_SWL"
+	KS3000_LORA DeviceModel = "KS3000_LORA"
+	WS101_R DeviceModel = "WS101_R"
+	DTL200_SWL DeviceModel = "DTL200_SWL"
+	EM300_DI DeviceModel = "EM300_DI"
+	NIT21LI_EMW104 DeviceModel = "NIT21LI_EMW104"
 )
 
 func GetDevicesMap()map[string]DeviceModel{
@@ -36,7 +37,10 @@ func GetDevicesMap()map[string]DeviceModel{
 		"303331397230790e" : KS3000LORA,
 		"3033313980307b0e" : KS3000LORA,
 		"24e124535f318437" : WS101R,
+		"f803320100028a5f" : NIT21LI_EMW104,
+		"f803320100030977" : NIT21LI_EMW104,
+		"f8033201000357e1" : NIT21LI_EMW104,
+		"f8033201000385fa" : NIT21LI_EMW104,
 	}
 	return devices_ids
 }
-
