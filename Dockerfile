@@ -30,7 +30,7 @@ RUN go get -v
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags='-w -s -extldflags "-static"' -a \
+    -ldflags='-w -s' -a \
     -o /go/bin/hello .
 
 ############################
