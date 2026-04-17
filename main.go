@@ -101,7 +101,7 @@ func main() {
 		incoming := <-c
 		s := strings.Split(incoming[0], "/")
 		// application/APPLICATION_ID/device/DEVICE_ID/command/down
-		var measurement string
+		var deviceModel string
 
 		switch s[1] {
 		// case "deb35cab-8a9a-42a9-b19e-0cd2ac859cc8":
@@ -129,7 +129,7 @@ func main() {
 		// 	measurement = "WaterTankLevel"
 
 		case "a7d603f2-3de4-4516-82f5-3323a3a80467":
-			measurement = string(devicesMap[s[3]])
+			deviceModel = string(devicesMap[s[3]])
 
 		// case "e2cbf2fb-fb26-4608-aacc-66115c0521c0":
 		// 	measurement = "SoilMoisture3DepthLevels"
@@ -150,18 +150,20 @@ func main() {
 		// 	measurement = "Temperature8Point"
 
 		case "8bcb6d0a-9ab8-4699-ab66-8bee202367a7":
-		    measurement = string(devicesMap[s[3]])
+			deviceModel = string(devicesMap[s[3]])
 		}
 
+		// fmt.Printf("PUBLISHING deviceModel: %s FROM MODEL: %s\n", deviceModel, s[3])
+		if deviceModel != "" {
+			sbPubTopic.Reset()
+			sbPubTopic.WriteString("device/")
+			sbPubTopic.WriteString(s[3])
+			sbPubTopic.WriteString("/telemetry/chirpstackv4")
+			// fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
+			token := pClient.Publish(sbPubTopic.String(), byte(mqttPubQos), false, incoming[1])
+			token.Wait()
+			// fmt.Printf("Token: %v\n", token)
+		}
 
-		deviceId := s[3]
-
-		sbPubTopic.Reset()
-		sbPubTopic.WriteString("device/")
-		sbPubTopic.WriteString(deviceId)
-		sbPubTopic.WriteString("/telemetry/chirpstackv4")
-		// fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
-		token := pClient.Publish(sbPubTopic.String(), byte(mqttPubQos), false, incoming[1])
-		token.Wait()
 	}
 }
