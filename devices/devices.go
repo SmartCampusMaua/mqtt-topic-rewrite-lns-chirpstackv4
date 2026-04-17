@@ -13,7 +13,7 @@ const (
 )
 
 func GetDevicesMap()map[string]DeviceModel{
-	devices_ids := map[string]DeviceModel{
+	devices_eui := map[string]DeviceModel{
 		"a8404123415f13fe" : DTL200SWL,
 		"a8404188945f13dd" : DTL200SWL,
 		"24e124136f315508" : EM300DI,
@@ -42,5 +42,5 @@ func GetDevicesMap()map[string]DeviceModel{
 		"f8033201000357e1" : NIT21LI_EMW104,
 		"f8033201000385fa" : NIT21LI_EMW104,
 	}
-	return devices_ids
+	return devices_eui
 }
