@@ -158,7 +158,7 @@ func main() {
 			sbPubTopic.Reset()
 			sbPubTopic.WriteString("device/")
 			sbPubTopic.WriteString(s[3])
-			sbPubTopic.WriteString("/telemetry/chirpstackv4")
+			sbPubTopic.WriteString("/telemetry")
 			// fmt.Printf("RECEIVED TOPIC: %s MESSAGE: %s\n", incoming[0], incoming[1])
 			token := pClient.Publish(sbPubTopic.String(), byte(mqttPubQos), false, incoming[1])
 			token.Wait()
