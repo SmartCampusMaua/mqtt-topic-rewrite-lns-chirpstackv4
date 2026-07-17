@@ -49,8 +49,8 @@ func main() {
 		// "application/4ae0c733-e9b5-482f-8542-3d08f8e6d077/device/+/event/up": byte(mqttSubQos), // SmartLight
 		// "application/25e85005-adc9-48d6-89e1-b4f677cf18ef/device/+/event/up": byte(mqttSubQos), // WaterTankLevel
 		"application/a7d603f2-3de4-4516-82f5-3323a3a80467/device/+/event/up": byte(mqttSubQos), // NIT21LI_EMW104
-		// "application/e2cbf2fb-fb26-4608-aacc-66115c0521c0/device/+/event/up": byte(mqttSubQos), // SoilMoisture3DepthLevels
-		// "application/5239fc35-6b28-4908-89fa-4efa9bf0636e/device/+/event/up": byte(mqttSubQos), // Sprinkler
+		"application/e2cbf2fb-fb26-4608-aacc-66115c0521c0/device/+/event/up": byte(mqttSubQos), // imt_smdl - SoilMoisture3DepthLevels
+		"application/5239fc35-6b28-4908-89fa-4efa9bf0636e/device/+/event/up": byte(mqttSubQos), // Sprinkler imt_svc - solenoid valve control
 		// "application/083c08e7-aa02-41a7-82cb-923ba7c11f53/device/+/event/up": byte(mqttSubQos), // MilkFat
 		// "application/15edcb63-f291-4333-ac61-13eb743ad8ef/device/+/event/up": byte(mqttSubQos), // GPS
 		// "application/8e20d344-cd01-4503-8ffc-36735af8b2c1/device/+/event/up": byte(mqttSubQos), // VibrationAverage
@@ -129,13 +129,13 @@ func main() {
 		// 	measurement = "WaterTankLevel"
 
 		case "a7d603f2-3de4-4516-82f5-3323a3a80467":
-			deviceModel = string(devicesMap[s[3]])
+			deviceModel = string(devicesMap[s[3]]) // NIT21LI_EMW104
 
-		// case "e2cbf2fb-fb26-4608-aacc-66115c0521c0":
-		// 	measurement = "SoilMoisture3DepthLevels"
+		case "e2cbf2fb-fb26-4608-aacc-66115c0521c0":
+			deviceModel = string(devicesMap[s[3]]) // imt_smdl - SoilMoisture3DepthLevels
 
-		// case "5239fc35-6b28-4908-89fa-4efa9bf0636e":
-		// 	measurement = "Sprinkler"
+		case "5239fc35-6b28-4908-89fa-4efa9bf0636e":
+			deviceModel = string(devicesMap[s[3]]) // imt_svc - solenoid valve control
 
 		// case "083c08e7-aa02-41a7-82cb-923ba7c11f53":
 		// 	measurement = "MilkFat"
@@ -150,7 +150,7 @@ func main() {
 		// 	measurement = "Temperature8Point"
 
 		case "8bcb6d0a-9ab8-4699-ab66-8bee202367a7":
-			deviceModel = string(devicesMap[s[3]])
+			deviceModel = string(devicesMap[s[3]]) // SmartCampusMaua
 		}
 
 		// fmt.Printf("PUBLISHING deviceModel: %s FROM MODEL: %s\n", deviceModel, s[3])
