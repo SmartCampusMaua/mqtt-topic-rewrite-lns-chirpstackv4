@@ -13,6 +13,8 @@ const (
 
 func GetDevicesMap() map[string]DeviceModel {
 	devices_eui := map[string]DeviceModel{
+		"24e124745f089480": "AT101",
+
 		"a8404123415f13fe": "DTL200_SWL",
 		"a8404188945f13dd": "DTL200_SWL",
 		"24e124136f315508": "EM300_DI",
