@@ -1,75 +1,24 @@
 package devices
 
-type DeviceModel string
-
-const (
-	EM500_SWL      DeviceModel = "EM500_SWL"
-	KS3000_LORA    DeviceModel = "KS3000_LORA"
-	WS101_R        DeviceModel = "WS101_R"
-	DTL200_SWL     DeviceModel = "DTL200_SWL"
-	EM300_DI       DeviceModel = "EM300_DI"
-	NIT21LI_EMW104 DeviceModel = "NIT21LI_EMW104"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
 )
 
-func GetDevicesMap() map[string]DeviceModel {
-	devices_eui := map[string]DeviceModel{
-		"24e124745f089480": "AT101",
+type DeviceModel string
 
-		"a8404123415f13fe": "DTL200_SWL",
-		"a8404188945f13dd": "DTL200_SWL",
-		"24e124136f315508": "EM300_DI",
-		"24e124136f483595": "EM300_DI",
-		"24e124136f483780": "EM300_DI",
-		"24e124136f484490": "EM300_DI",
-		"24e124136f484497": "EM300_DI",
-		"24e124136f484616": "EM300_DI",
-		"24e124136f485173": "EM300_DI",
-
-		"24e1241260663cb4": "EM500_SWL",
-		"24e124126066a001": "EM500_SWL",
-		"24e124126066b079": "EM500_SWL",
-		"24e124126066d65e": "EM500_SWL",
-		"24e124126066e766": "EM500_SWL",
-		"24e124126d284622": "EM500_SWL",
-		"24e124126f422301": "EM500_SWL",
-		"24e124126f422693": "EM500_SWL",
-		"24e124126f427639": "EM500_SWL",
-		"24e124126f427690": "EM500_SWL",
-		"24e124126f422141": "EM500_SWL",
-		"24e124126f427556": "EM500_SWL",
-		"24e124126f427781": "EM500_SWL",
-		"24e124126f427831": "EM500_SWL",
-
-		"24e124126f357298": "EM500_SMTC",
-		"24e124126e210291": "EM500_SMTC",
-
-		"24e124806f423368": "VS373",
-		"24e124806e516404": "VS373",
-
-		"303331395230870e": "KS3000_LORA",
-		"303331396b30600f": "KS3000_LORA",
-		"303331396b30720e": "KS3000_LORA",
-		"303331396c30700e": "KS3000_LORA",
-		"303331396d305f0f": "KS3000_LORA",
-		"303331397230790e": "KS3000_LORA",
-		"3033313980307b0e": "KS3000_LORA",
-
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-		// "": "KS3000_LORA",
-
-		"24e124535f318437": "WS101_R",
-		"f803320100028a5f": "NIT21LI_EMW104",
-		"f803320100030977": "NIT21LI_EMW104",
-		"f8033201000357e1": "NIT21LI_EMW104",
-		"f8033201000385fa": "NIT21LI_EMW104",
-		"0004a30b00e9be97": "LNV3_SM3DL",
-		"0004a30b00e94314": "LNV3_SVC",
+// GetDevicesMap reads the devEUI -> device model registry from a JSON file.
+func GetDevicesMap(path string) (map[string]DeviceModel, error) {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("read device registry file: %w", err)
 	}
-	return devices_eui
+
+	var devicesEUI map[string]DeviceModel
+	if err := json.Unmarshal(contents, &devicesEUI); err != nil {
+		return nil, fmt.Errorf("parse device registry file: %w", err)
+	}
+
+	return devicesEUI, nil
 }

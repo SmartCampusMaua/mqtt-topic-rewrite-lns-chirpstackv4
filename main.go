@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/OpenDataTelemetry/mqtt-topic-rewrite-lns-imt/devices"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -39,7 +42,7 @@ func main() {
 	mqttSubOpts.SetConnectionLostHandler(connLostHandler)
 
 	mqttSubTopics := map[string]byte{
-		// DEVICES REGISTRED IN DEVICES.GO
+		// DEVICES REGISTRED IN DEVICES.JSON
 		// "application/deb35cab-8a9a-42a9-b19e-0cd2ac859cc8/device/+/event/up": byte(mqttSubQos), // DET
 		// "application/cf909d7a-a970-4473-9ef3-2c0618e1eb63/device/+/event/up": byte(mqttSubQos), // Emma
 		// "application/33d3fb39-c249-4f8d-b105-2706af00bf5c/device/+/event/up": byte(mqttSubQos), // EnergyMeter
@@ -95,7 +98,44 @@ func main() {
 		os.Exit(1)
 	}
 
-	devicesMap := devices.GetDevicesMap()
+	deviceRegistryFile := os.Getenv("DEVICE_REGISTRY_FILE")
+	if deviceRegistryFile == "" {
+		deviceRegistryFile = "devices.json"
+	}
+	deviceRegistryRefreshSec := 30
+	if raw := os.Getenv("DEVICE_REGISTRY_REFRESH_SEC"); raw != "" {
+		if v, err := strconv.Atoi(raw); err == nil && v > 0 {
+			deviceRegistryRefreshSec = v
+		}
+	}
+
+	devicesMap, err := devices.GetDevicesMap(deviceRegistryFile)
+	if err != nil {
+		panic(fmt.Sprintf("failed to load device registry (%s): %v", deviceRegistryFile, err))
+	}
+	fmt.Printf("Device registry loaded: file=%s devices=%d\n", deviceRegistryFile, len(devicesMap))
+
+	var devicesMu sync.RWMutex
+	refreshTicker := time.NewTicker(time.Duration(deviceRegistryRefreshSec) * time.Second)
+	defer refreshTicker.Stop()
+	go func() {
+		for range refreshTicker.C {
+			nextDevicesMap, err := devices.GetDevicesMap(deviceRegistryFile)
+			if err != nil {
+				fmt.Printf("Device registry reload failed: %v\n", err)
+				continue
+			}
+			devicesMu.Lock()
+			devicesMap = nextDevicesMap
+			devicesMu.Unlock()
+			fmt.Printf("Device registry reloaded: file=%s devices=%d\n", deviceRegistryFile, len(nextDevicesMap))
+		}
+	}()
+	getDeviceModel := func(devEUI string) string {
+		devicesMu.RLock()
+		defer devicesMu.RUnlock()
+		return string(devicesMap[devEUI])
+	}
 
 	for {
 		incoming := <-c
@@ -129,13 +169,13 @@ func main() {
 		// 	measurement = "WaterTankLevel"
 
 		case "a7d603f2-3de4-4516-82f5-3323a3a80467":
-			deviceModel = string(devicesMap[s[3]]) // NIT21LI_EMW104
+			deviceModel = getDeviceModel(s[3]) // NIT21LI_EMW104
 
 		case "e2cbf2fb-fb26-4608-aacc-66115c0521c0":
-			deviceModel = string(devicesMap[s[3]]) // imt_smdl - SoilMoisture3DepthLevels
+			deviceModel = getDeviceModel(s[3]) // imt_smdl - SoilMoisture3DepthLevels
 
 		case "5239fc35-6b28-4908-89fa-4efa9bf0636e":
-			deviceModel = string(devicesMap[s[3]]) // imt_svc - solenoid valve control
+			deviceModel = getDeviceModel(s[3]) // imt_svc - solenoid valve control
 
 		// case "083c08e7-aa02-41a7-82cb-923ba7c11f53":
 		// 	measurement = "MilkFat"
@@ -150,7 +190,7 @@ func main() {
 		// 	measurement = "Temperature8Point"
 
 		case "8bcb6d0a-9ab8-4699-ab66-8bee202367a7":
-			deviceModel = string(devicesMap[s[3]]) // SmartCampusMaua
+			deviceModel = getDeviceModel(s[3]) // SmartCampusMaua
 		}
 
 		// fmt.Printf("PUBLISHING deviceModel: %s FROM MODEL: %s\n", deviceModel, s[3])
