@@ -47,6 +47,12 @@ COPY --from=builder /etc/group /etc/group
 # Copy our static executable
 COPY --from=builder /go/bin/hello /go/bin/hello
 
+# Device registry is not baked into the image — it must be supplied at
+# runtime (e.g. a k8s ConfigMap volume mounted at this exact path). Periodic
+# reload (DEVICE_REGISTRY_REFRESH_SEC) then picks up ConfigMap updates
+# without a redeploy. If nothing is mounted here, startup fails fast.
+ENV DEVICE_REGISTRY_FILE=/etc/mqtt-topic-rewrite-lns-chirpstackv4/devices.json
+
 # Use an unprivileged user.
 USER appuser:appuser
 
